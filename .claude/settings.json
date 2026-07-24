@@ -1,0 +1,8 @@
+{
+  "enabledPlugins": [
+    "commontrace@commontrace/skill"
+  ],
+  "env": {
+    "CT_AUTO_CONTRIBUTE_ON_MOVE_ON": "1"
+  }
+}

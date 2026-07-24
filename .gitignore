@@ -1,0 +1,13 @@
+# Python
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+
+# Recorded demo clips (kept out of git if large — host the MP4s on the site instead)
+*.mp4
+
+# Local env / secrets — the seed script reads COMMONTRACE_API_KEY from the environment
+.env

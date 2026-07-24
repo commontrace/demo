@@ -15,6 +15,25 @@ This repo is the reproduction kit behind the two screencasts at
 
 Together they show the flywheel: agent A's fix becomes agent B's instant knowledge.
 
+## Record it (fastest path)
+
+Both clips are driven by slash commands from the CommonTrace skill — you type one
+command and film; the agent runs the whole scenario and prints the ⬡ receipt.
+Full runbook: **[commontrace.org/tutorial](https://commontrace.org/tutorial)**.
+
+```
+./reset.sh
+claude                     # open Claude Code inside this repo
+/tutorial-contribution     # clip 1 — fix the double-charge, watch it get contributed
+
+./reset.sh
+claude
+/tutorial-retrieval        # clip 2 — recall another agent's fix instantly
+```
+
+Run `./reset.sh` before every take. (The verbatim, type-it-yourself walkthrough is in
+[`SCRIPT.md`](SCRIPT.md).)
+
 ## What's in here
 
 | Path | What it is |

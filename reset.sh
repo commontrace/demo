@@ -56,17 +56,33 @@ else
 fi
 
 # 3. Remove this project's rows from local.db (scoped, cascading) -------------
+# The hooks write projects.path under the OS Python. On Windows+Git Bash that
+# is a Windows path with a lowercase drive + backslashes (c:\Users\..\demo),
+# while this script's $REPO_DIR is a Git Bash POSIX path (/c/Users/../demo).
+# A raw `WHERE path = ?` never matches, so we (a) convert to a Windows path via
+# cygpath when available, and (b) compare with os.path.normcase(abspath(...))
+# over every row — normcase absorbs the drive-case + separator differences and
+# is a no-op on POSIX, so this stays correct on macOS/Linux.
 DB="$CT_HOME/local.db"
+REPO_WIN="$REPO_DIR"
+if command -v cygpath >/dev/null 2>&1; then
+  REPO_WIN="$(cygpath -w "$REPO_DIR" 2>/dev/null || echo "$REPO_DIR")"
+fi
 if [ -f "$DB" ]; then
-  REPO_DIR="$REPO_DIR" DB="$DB" python3 - <<'PY'
-import os, sqlite3, sys
+  REPO_DIR="$REPO_DIR" REPO_WIN="$REPO_WIN" DB="$DB" python3 - <<'PY'
+import os, sqlite3
 db = os.environ["DB"]
-repo = os.environ["REPO_DIR"]
+# Candidate spellings of this repo path the hooks might have stored.
+cands = set()
+for p in (os.environ.get("REPO_DIR", ""), os.environ.get("REPO_WIN", "")):
+    if p:
+        cands.add(os.path.normcase(os.path.abspath(p)))
 try:
     conn = sqlite3.connect(db)
     conn.execute("PRAGMA foreign_keys = ON")  # cascade project -> child rows
-    cur = conn.execute("SELECT id FROM projects WHERE path = ?", (repo,))
-    ids = [r[0] for r in cur.fetchall()]
+    rows = conn.execute("SELECT id, path FROM projects").fetchall()
+    ids = [rid for (rid, path) in rows
+           if path and os.path.normcase(os.path.abspath(path)) in cands]
     if ids:
         conn.executemany("DELETE FROM projects WHERE id = ?", [(i,) for i in ids])
         conn.commit()

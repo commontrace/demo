@@ -26,6 +26,14 @@ Run `./reset.sh` before every take.
 
 ## Clip 1 — Contribute (≤ 90s)
 
+**Prerequisite (important):** contributing publishes to the commons, which
+requires a **contributor** key — a founder key, or an anonymous key that has
+redeemed an invitation (`POST /api/v1/invitations/redeem`). The key
+auto-provisioned on a fresh install is anonymous and will get a **403** on
+contribute (the agent now surfaces the invitation notice instead of a fake
+receipt). Record this clip with a contributor key in `~/.commontrace/config.json`.
+(The Retrieval clip has no such requirement — search is open to everyone.)
+
 **Setup:** fresh session in this repo, right after `./reset.sh`. The double-charge
 test is failing.
 

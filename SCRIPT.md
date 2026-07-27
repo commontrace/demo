@@ -24,66 +24,48 @@ Run `./reset.sh` before every take.
 
 ---
 
-## Clip 1 — Contribute (≤ 90s)
+## Clip 1: Contribute (the struggle version)
 
 **Prerequisite (important):** contributing publishes to the commons, which
-requires a **contributor** key — a founder key, or an anonymous key that has
-redeemed an invitation (`POST /api/v1/invitations/redeem`). The key
-auto-provisioned on a fresh install is anonymous and will get a **403** on
-contribute (the agent now surfaces the invitation notice instead of a fake
-receipt). Record this clip with a contributor key in `~/.commontrace/config.json`.
-(The Retrieval clip has no such requirement — search is open to everyone.)
+requires a **contributor** key (a founder key, or an anonymous key that has
+redeemed an invitation via `POST /api/v1/invitations/redeem`). An anonymous key
+gets a **403** on contribute (the agent surfaces the invitation notice instead
+of a fake receipt). Record this clip with a contributor key in
+`~/.commontrace/config.json`. (The Retrieval clip has no such requirement,
+search is open to everyone.)
 
-**Setup:** fresh session in this repo, right after `./reset.sh`. The double-charge
-test is failing.
+**Setup:** `./reset.sh`, then `claude` inside this repo. The double-charge test
+is failing. The point of this clip is the STRUGGLE: two dead ends, then your
+insight lands the fix, and CommonTrace preserves the hard-won knowledge.
 
-**Line 1 (you type):**
+**You type (this starts Round 1):**
 
-> `Let's work the plan. Task 1: some customers say they were charged twice — figure out why and fix it.`
+> `/tutorial-contribution`
 
-**Expected agent actions (predictable):**
-1. Reads `PLAN.md` and `app/payments.py`; runs `python -m pytest -q` and sees
-   `test_duplicate_event_charges_once` fail (8400 vs 4200).
-2. Identifies the missing idempotency guard in `handle_stripe_event`.
-3. Applies the fix — a one-line guard on `event["id"]`:
-
-   ```python
-   def handle_stripe_event(event: dict, store: ChargeStore) -> None:
-       if event.get("type") != "charge.succeeded":
-           return
-       if store.seen_event(event["id"]):      # idempotency: Stripe delivers at least once
-           return
-       data = event.get("data") or {}
-       store.record_charge(
-           event_id=event["id"],
-           customer=data["customer"],
-           amount=data["amount"],
-       )
-   ```
-
-4. Re-runs the suite → all green. This is an unambiguous `error_resolution` /
-   `test_fix_cycle` candidate, so a fix-candidate is now present in the session.
+The agent reads `PLAN.md` + `app/payments.py`, runs `python -m pytest -q` (the
+test fails, 8400 vs 4200), guesses it is a Stripe retry, wraps the charge in a
+try/except, reruns pytest, and it STILL fails. It stops and waits.
 
 **Line 2 (you type):**
 
-> `Looks fixed — let's move on to the next task in the plan.`
+> `JUST FIX IT`
 
-**What fires (deterministic):** the phrase matches a `move_on` pattern
-(`move on to the next`, `next task`), a fix-candidate is present, the trigger is
-enabled for this project, and nothing has been contributed yet → the
-auto-contribute-on-move-on trigger fires. The agent:
-- spawns the CommonTrace contribution as a **background handoff** (identical to
-  `/trace`: a hidden subagent authors the trace from the *real* current-session
-  fix, POSTs it, and emits the ⬡ receipt) — **non-blocking**, and
-- immediately proceeds to **Task 2** (the trivial order-confirmation email).
+The agent tries a naive dedup by amount, reruns pytest, STILL fails ("that guard
+resets every call, it does not remember across deliveries"). It stops and waits.
 
-**What surfaces on camera:** while Task 2 is being done, the ⬡ receipt appears on
-its own — a small ASCII card confirming the trace was contributed (mode:
-*contributed*), with a `commontrace.org/t/<id>` link. That receipt landing
-unprompted is the whole point of the clip. End the take once it shows.
+**Line 3 (you type):**
 
-> Note: the receipt is emitted by the background subagent when the POST returns.
-> Task 2 is intentionally trivial so the receipt lands inside the 90s window.
+> `what about an idempotency guard?`
+
+The agent keys on `event["id"]` (`store.seen_event`), reruns pytest, and it
+PASSES (6 passed). Then it contributes the hard-won trace and prints the ⬡
+receipt (`EFFORT 12m · 2 errors`, the struggle shows). End the take when the
+receipt appears.
+
+**Why this films well:** two dead ends, then your idempotency insight lands the
+fix. The contributed trace carries the dead ends (`error_count 2`,
+`user_correction` pattern), so the receipt shows more effort. Harder-won
+knowledge ranks higher in CommonTrace, which is the whole thesis on screen.
 
 ---
 

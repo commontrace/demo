@@ -25,14 +25,41 @@
 #   It does NOT delete local.db, does NOT touch other projects' rows, and does
 #   NOT touch ~/.commontrace/config.json or your API key.
 #
+# Usage:
+#   ./reset.sh              full reset (steps 1-3) — run between takes
+#   ./reset.sh --repo-only  step 1 only — safe to run from INSIDE a live
+#                           Claude Code session, which is how the
+#                           /tutorial-* commands re-arm themselves. Steps 2
+#                           and 3 would delete the state of the very session
+#                           that invoked them, so they are skipped.
+#
 set -euo pipefail
+
+REPO_ONLY=0
+for arg in "$@"; do
+  case "$arg" in
+    --repo-only) REPO_ONLY=1 ;;
+    -h|--help)
+      sed -n '2,32p' "${BASH_SOURCE[0]}" | sed 's/^# \{0,1\}//'
+      exit 0
+      ;;
+    *)
+      echo "reset.sh: unknown argument '$arg' (try --help)" >&2
+      exit 2
+      ;;
+  esac
+done
 
 REPO_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 CT_HOME="${COMMONTRACE_HOME:-$HOME/.commontrace}"
 
 echo "reset.sh — restoring demo baseline"
 echo "  repo:          $REPO_DIR"
-echo "  commontrace:   $CT_HOME"
+if [ "$REPO_ONLY" -eq 1 ]; then
+  echo "  mode:          --repo-only (skill state left alone)"
+else
+  echo "  commontrace:   $CT_HOME"
+fi
 
 # 1. Restore the buggy app + tests -------------------------------------------
 cd "$REPO_DIR"
@@ -44,6 +71,11 @@ if git rev-parse --git-dir >/dev/null 2>&1; then
   echo "  [ok] app/ and tests/ restored to committed (buggy) state"
 else
   echo "  [skip] not a git repo — cannot restore app/tests"
+fi
+
+if [ "$REPO_ONLY" -eq 1 ]; then
+  echo "reset.sh — done (repo only). Ready for the next round."
+  exit 0
 fi
 
 # 2. Clear ephemeral per-session skill state ---------------------------------

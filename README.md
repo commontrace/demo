@@ -22,25 +22,25 @@ command and film; the agent runs the whole scenario and prints the ⬡ receipt.
 Full runbook: **[commontrace.org/tutorial](https://commontrace.org/tutorial)**.
 
 ```
-./reset.sh
 claude                     # open Claude Code inside this repo
 /tutorial-contribution     # clip 1 — fix the double-charge, watch it get contributed
-
-./reset.sh
-claude
 /tutorial-retrieval        # clip 2 — recall another agent's fix instantly
 ```
 
-Run `./reset.sh` before every take. (The verbatim, type-it-yourself walkthrough is in
-[`SCRIPT.md`](SCRIPT.md).)
+No venv, no `pip install`, no `./reset.sh`. The slash commands reset the repo to its
+buggy baseline themselves at the start of every run, and the test suite is
+`unittest`-based so it runs on a stock Python 3.10+. (The verbatim, type-it-yourself
+walkthrough is in [`SCRIPT.md`](SCRIPT.md); `./reset.sh` is still there if you want to
+reset by hand.)
 
 ## What's in here
 
 | Path | What it is |
 |------|-----------|
 | `app/payments.py` | The webhook logic — `handle_stripe_event()` + `ChargeStore`. **Ships buggy on purpose.** |
-| `app/api.py` | A small FastAPI wrapper (`POST /webhooks/stripe`) so it reads like a real service. |
-| `tests/test_payments.py` | Unit tests. `test_duplicate_event_charges_once` **fails on `main`** — that's the bug the demo fixes. |
+| `app/api.py` | A small FastAPI wrapper (`POST /webhooks/stripe`) so it reads like a real service. **Optional** — nothing in the demo needs it. |
+| `tests/test_payments.py` | Unit tests, standard library only. `TestCharges::test_duplicate_event_charges_once` **fails on `main`** — that's the bug the demo fixes. |
+| `tests/test_api.py` | HTTP smoke test. Skips itself when fastapi/httpx are not installed. |
 | `PLAN.md` | The two-task plan the agent works through on camera. |
 | `SCRIPT.md` | The verbatim lines to type for each clip + recording notes + expected agent actions. |
 | `reset.sh` | Restores the repo + local skill state to a clean pre-take state so takes repeat. |
@@ -56,25 +56,38 @@ You need [Claude Code](https://claude.com/claude-code) and the CommonTrace skill
 git clone https://github.com/commontrace/demo.git
 cd demo
 
-# 2. Install the CommonTrace skill (Claude Code plugin)
-#    Marketplace: https://github.com/commontrace/skill
-/plugin marketplace add commontrace/skill
-/plugin install commontrace
+# 2. See the bug (the double-charge test fails on purpose).
+#    Standard library only — no venv, no pip install.
+python3 -m unittest -q          # or: python3 -m pytest -q, if you have pytest
 
-# 3. Set up the app
-python -m venv .venv && source .venv/bin/activate
-pip install -r requirements.txt
-
-# 4. See the bug (the double-charge test fails on purpose)
-python -m pytest -q
-
-# 5. Open Claude Code in this directory and run the demo
-#    Follow SCRIPT.md — just type the agreed lines and record.
+# 3. Open Claude Code here, install the skill, run the demo
+claude
 ```
 
+Then, inside Claude Code:
+
+```
+/plugin marketplace add commontrace/skill
+/plugin install commontrace@commontrace
+/tutorial-contribution
+```
+
+Publishing a trace needs a **contributor** key. If you already have one, pass it at
+install time and skip the config file entirely:
+
+```
+/plugin install commontrace@commontrace --config api_key=ct_...
+```
+
+Without one you still get the full run: the command detects an anonymous key up front
+and offers the Retrieval clip, which needs no key at all.
+
 The double-charge test is **expected to fail on a fresh clone** — fixing it is the point.
-After a take, run `./reset.sh` to restore the buggy state and clear local skill session
-state so the next take is identical.
+The slash commands restore that buggy baseline themselves before each run, so takes
+repeat without any manual reset.
+
+Want the HTTP layer too? `pip install -r requirements.txt` in a venv also enables
+`tests/test_api.py`, which otherwise skips itself.
 
 ## The bug, in one sentence
 

@@ -11,5 +11,7 @@ single order. The payments service applies Stripe `charge.succeeded` webhooks in
 - Fix it so a retried or duplicated delivery of the same event only charges once.
 - Get the whole test suite green.
 
-Acceptance: `python -m pytest -q` passes, including
-`test_duplicate_event_charges_once`.
+Acceptance: `python3 -m pytest -q` passes, including
+`TestCharges::test_duplicate_event_charges_once`. (No pytest installed?
+`python3 -m unittest -q` runs the same suite with nothing but the standard
+library.)

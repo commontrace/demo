@@ -6,9 +6,9 @@ search for the Clip-2 symptom and asserts the seeded trace comes back **top-1**.
 This is what makes the recall clip deterministic: a fresh agent hitting the same
 double-charge retrieves this trace first, every time.
 
-Run manually, once, with a founder contributor key:
+Run manually, once, with the key the trace should be attributed to:
 
-    export COMMONTRACE_API_KEY=ct_...        # founding-door contributor key
+    export COMMONTRACE_API_KEY=ct_...        # any registered key can publish
     python seed/seed_trace.py
 
 Exit codes:

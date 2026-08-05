@@ -26,12 +26,11 @@ Run `./reset.sh` before every take.
 
 ## Clip 1: Contribute (the struggle version)
 
-**Prerequisite (important):** contributing publishes to the commons, which
-requires a **contributor** key (a founder key, or an anonymous key that has
-redeemed an invitation via `POST /api/v1/invitations/redeem`). An anonymous key
-gets a **403** on contribute (the agent surfaces the invitation notice instead
-of a fake receipt). Record this clip with a contributor key in
-`~/.commontrace/config.json`. (The Retrieval clip has no such requirement,
+**Prerequisite:** none beyond having run Claude Code once, which is enough for
+the plugin to register an account. Publishing is open to any account, including
+the anonymous one, so this clip works out of the box. Use a key of your own in
+`~/.commontrace/config.json` only if you want the trace attributed to it.
+(The Retrieval clip has no requirement either,
 search is open to everyone.)
 
 **Setup:** `./reset.sh`, then `claude` inside this repo. The double-charge test

@@ -11,7 +11,7 @@ This is **not** part of the app or the test suite. Run it by hand, one time, whe
 setting up the demo (and again only if you change the trace content).
 
 ```bash
-# A FOUNDER CONTRIBUTOR key (founding-door — allowed to contribute). Env only.
+# The key the seeded trace should be attributed to. Env only, never hardcoded.
 export COMMONTRACE_API_KEY=ct_...
 
 python seed/seed_trace.py
@@ -45,6 +45,6 @@ is not instantly searchable — the script polls for a while. Tune the wait with
 ## Secrets
 
 The API key is read from the environment **only**. It is never hardcoded, never
-committed, and never logged. `.env` is git-ignored. Contributing requires a
-founder / founding-door key; a plain anonymous key will be rejected by the
-invitation gate.
+committed, and never logged. `.env` is git-ignored. Any registered key can
+publish — use the one whose name you want on the seeded trace, since it is the
+attribution visible to everyone who retrieves it.

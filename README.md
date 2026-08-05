@@ -45,7 +45,7 @@ reset by hand.)
 | `SCRIPT.md` | The verbatim lines to type for each clip + recording notes + expected agent actions. |
 | `reset.sh` | Restores the repo + local skill state to a clean pre-take state so takes repeat. |
 | `.claude/settings.json` | Enables the auto-contribute-on-move-on trigger **for this project only**. |
-| `seed/seed_trace.py` | Seeds the recall trace into prod CommonTrace (run once, manually, with a contributor key). |
+| `seed/seed_trace.py` | Seeds the recall trace into prod CommonTrace (run once, manually, with whichever key should be credited). |
 
 ## Try it yourself
 
@@ -72,15 +72,13 @@ Then, inside Claude Code:
 /tutorial-contribution
 ```
 
-Publishing a trace needs a **contributor** key. If you already have one, pass it at
-install time and skip the config file entirely:
+No key to request: the plugin registers an account on first run and publishing is open
+to it. Pass a key of your own at install time only if you want the trace attributed to
+that account instead:
 
 ```
 /plugin install commontrace@commontrace --config api_key=ct_...
 ```
-
-Without one you still get the full run: the command detects an anonymous key up front
-and offers the Retrieval clip, which needs no key at all.
 
 The double-charge test is **expected to fail on a fresh clone** — fixing it is the point.
 The slash commands restore that buggy baseline themselves before each run, so takes

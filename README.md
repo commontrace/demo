@@ -72,12 +72,12 @@ Then, inside Claude Code:
 /tutorial-contribution
 ```
 
-No key to request: the plugin registers an account on first run and publishing is open
-to it. Pass a key of your own at install time only if you want the trace attributed to
-that account instead:
+No key to request and nothing to configure: the plugin registers an account on first
+run and publishing is open to it. Export a key of your own only if you want the trace
+attributed to that account instead:
 
-```
-/plugin install commontrace@commontrace --config api_key=ct_...
+```bash
+export COMMONTRACE_API_KEY=ct_...
 ```
 
 The double-charge test is **expected to fail on a fresh clone** — fixing it is the point.

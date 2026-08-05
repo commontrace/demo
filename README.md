@@ -49,36 +49,24 @@ reset by hand.)
 
 ## Try it yourself
 
-You need [Claude Code](https://claude.com/claude-code) and the CommonTrace skill.
+You need [Claude Code](https://claude.com/claude-code) and Python 3.10+. One command
+installs the plugin, clones this repo and drops you into Claude Code inside it:
 
 ```bash
-# 1. Clone
-git clone https://github.com/commontrace/demo.git
-cd demo
-
-# 2. See the bug (the double-charge test fails on purpose).
-#    Standard library only — no venv, no pip install.
-python3 -m unittest -q          # or: python3 -m pytest -q, if you have pytest
-
-# 3. Open Claude Code here, install the skill, run the demo
-claude
+claude plugin marketplace add commontrace/skill && \
+  claude plugin install commontrace@commontrace && \
+  git clone https://github.com/commontrace/demo && cd demo && claude
 ```
 
 Then, inside Claude Code:
 
 ```
-/plugin marketplace add commontrace/skill
-/plugin install commontrace@commontrace
-/tutorial-contribution
+/tutorial-retrieval
 ```
 
-No key to request and nothing to configure: the plugin registers an account on first
-run and publishing is open to it. Export a key of your own only if you want the trace
-attributed to that account instead:
-
-```bash
-export COMMONTRACE_API_KEY=ct_...
-```
+No venv, no pip install, no API key to request: the plugin registers an anonymous
+account on its own and publishing is open to it. Export `COMMONTRACE_API_KEY` only if
+you want traces attributed to an account of your own.
 
 The double-charge test is **expected to fail on a fresh clone** — fixing it is the point.
 The slash commands restore that buggy baseline themselves before each run, so takes

@@ -39,7 +39,7 @@ insight lands the fix, and CommonTrace preserves the hard-won knowledge.
 
 **You type (this starts Round 1):**
 
-> `/tutorial-contribution`
+> `/commontrace:tutorial-contribution`
 
 The agent reads `PLAN.md` + `app/payments.py`, runs `python -m pytest -q` (the
 test fails, 8400 vs 4200), guesses it is a Stripe retry, wraps the charge in a
@@ -68,7 +68,7 @@ knowledge ranks higher in CommonTrace, which is the whole thesis on screen.
 
 ---
 
-## Clip 2 — Recall (≤ 90s)
+## Clip 2. Recall (≤ 90s)
 
 **Setup:** a **fresh** Claude Code session on a **sibling copy** of this app
 (clone the repo again into a second directory so it's clearly a different agent /
@@ -77,13 +77,13 @@ seeded in prod.
 
 **Line 1 (you type):**
 
-> `A few customers are reporting duplicate charges on a single order — can you look into it?`
+> `A few customers are reporting duplicate charges on a single order, can you look into it?`
 
 **Expected behavior (deterministic):**
 1. `session_start` has already searched CommonTrace with this project's context;
    the agent also searches on the described symptom.
-2. The seeded idempotency trace — *"Stripe webhook double-charges on retried
-   events"* — returns **top-1** (asserted by `seed/seed_trace.py`).
+2. The seeded idempotency trace, *"Stripe webhook double-charges on retried
+   events"*, returns **top-1** (asserted by `seed/seed_trace.py`).
 3. The agent applies the same idempotency guard on `event["id"]` in seconds,
    citing the retrieved trace, and the tests go green.
 

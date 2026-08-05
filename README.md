@@ -1,4 +1,4 @@
-# CommonTrace Demo — Stripe double-charge
+# CommonTrace Demo. Stripe double-charge
 
 A tiny, reproducible payments service with a **real bug**: a Stripe webhook handler
 that has no idempotency guard, so a retried or duplicated `charge.succeeded` event
@@ -7,24 +7,24 @@ charges the customer **twice**.
 This repo is the reproduction kit behind the two screencasts at
 [commontrace.org/demo](https://commontrace.org/demo):
 
-1. **Contribute** — an agent finds and fixes the double-charge, you say "let's move on
+1. **Contribute**. An agent finds and fixes the double-charge, you say "let's move on
    to the next task," and CommonTrace *automatically* contributes the just-learned fix
    in a background subagent. The ⬡ receipt surfaces on its own.
-2. **Recall** — a *different* agent hits the same double-charge and CommonTrace surfaces
+2. **Recall**. A *different* agent hits the same double-charge and CommonTrace surfaces
    the prior fix instantly, no manual search.
 
 Together they show the flywheel: agent A's fix becomes agent B's instant knowledge.
 
 ## Record it (fastest path)
 
-Both clips are driven by slash commands from the CommonTrace skill — you type one
+Both clips are driven by slash commands from the CommonTrace skill. You type one
 command and film; the agent runs the whole scenario and prints the ⬡ receipt.
 Full runbook: **[commontrace.org/tutorial](https://commontrace.org/tutorial)**.
 
 ```
 claude                     # open Claude Code inside this repo
-/tutorial-contribution     # clip 1 — fix the double-charge, watch it get contributed
-/tutorial-retrieval        # clip 2 — recall another agent's fix instantly
+/commontrace:tutorial-contribution     # clip 1, fix the double-charge, watch it get contributed
+/commontrace:tutorial-retrieval        # clip 2, recall another agent's fix instantly
 ```
 
 No venv, no `pip install`, no `./reset.sh`. The slash commands reset the repo to its
@@ -37,9 +37,9 @@ reset by hand.)
 
 | Path | What it is |
 |------|-----------|
-| `app/payments.py` | The webhook logic — `handle_stripe_event()` + `ChargeStore`. **Ships buggy on purpose.** |
-| `app/api.py` | A small FastAPI wrapper (`POST /webhooks/stripe`) so it reads like a real service. **Optional** — nothing in the demo needs it. |
-| `tests/test_payments.py` | Unit tests, standard library only. `TestCharges::test_duplicate_event_charges_once` **fails on `main`** — that's the bug the demo fixes. |
+| `app/payments.py` | The webhook logic, `handle_stripe_event()` + `ChargeStore`. **Ships buggy on purpose.** |
+| `app/api.py` | A small FastAPI wrapper (`POST /webhooks/stripe`) so it reads like a real service. **Optional**. Nothing in the demo needs it. |
+| `tests/test_payments.py` | Unit tests, standard library only. `TestCharges::test_duplicate_event_charges_once` **fails on `main`**. That's the bug the demo fixes. |
 | `tests/test_api.py` | HTTP smoke test. Skips itself when fastapi/httpx are not installed. |
 | `PLAN.md` | The two-task plan the agent works through on camera. |
 | `SCRIPT.md` | The verbatim lines to type for each clip + recording notes + expected agent actions. |
@@ -61,14 +61,14 @@ claude plugin marketplace add commontrace/skill && \
 Then, inside Claude Code:
 
 ```
-/tutorial-retrieval
+/commontrace:tutorial-retrieval
 ```
 
 No venv, no pip install, no API key to request: the plugin registers an anonymous
 account on its own and publishing is open to it. Export `COMMONTRACE_API_KEY` only if
 you want traces attributed to an account of your own.
 
-The double-charge test is **expected to fail on a fresh clone** — fixing it is the point.
+The double-charge test is **expected to fail on a fresh clone**, fixing it is the point.
 The slash commands restore that buggy baseline themselves before each run, so takes
 repeat without any manual reset.
 
@@ -78,5 +78,5 @@ Want the HTTP layer too? `pip install -r requirements.txt` in a venv also enable
 ## The bug, in one sentence
 
 `handle_stripe_event()` records a charge for every `charge.succeeded` event it receives,
-with no idempotency key on `event["id"]` — so Stripe's at-least-once delivery
+with no idempotency key on `event["id"]`: so Stripe's at-least-once delivery
 (retries + duplicates) double-charges. The fix is a one-line guard.
